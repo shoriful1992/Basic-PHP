@@ -1,20 +1,20 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
-<head>
-<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
-<title>Untitled Document</title>
-</head>
 <?php include('header.php');?>
 <?php
 if(isset($_POST['btn_save']))
 	{
-
+		$tmp_name = $_FILES["photo"]["tmp_name"];
+		$photo = rand(1,1000).$_FILES["photo"]["name"];
+		$folder_destination = 'photos/'.$photo;
+			
+		move_uploaded_file($tmp_name, $folder_destination);
+		
 		$name = $_POST["name"];
 		$father_name = $_POST["father_name"];
 		$email = $_POST["email"];
 		$gendar = $_POST["gendar"];
 		$hobby = implode(",", $_POST['hobby']);
-		$address = $_POST["address"];
+		$address = $_POST['address'];
+		$photo = $_POST['photo'];
 		$password = md5($_POST['password']);
 		$insert = "INSERT INTO registration SET
 							name = '$name',
@@ -23,6 +23,7 @@ if(isset($_POST['btn_save']))
 							address = '$address',
 							hobby = '$hobby',
 							email = '$email',
+							photo = '$folder_destination',
 							password = '$password'
 									
 						";
@@ -34,7 +35,7 @@ if(isset($_POST['btn_save']))
 <body>
 
 <div class="container">
-<div class="row col-md-6">
+<div class="row col-md-12">
 <div class="panel panel-default">
 <div class="panel-heading">
       <h3 class="panel-title">
@@ -42,7 +43,7 @@ if(isset($_POST['btn_save']))
       </h3>
    </div>
 <div class="panel-body">
-<form class="form-horizontal" method="post">
+<form class="form-horizontal" method="post" enctype="multipart/form-data">
 	<div class="form-group">
     <label for="inputName3" class="col-sm-2 control-label">Name</label>
 	<div class="col-sm-10">
@@ -83,6 +84,13 @@ if(isset($_POST['btn_save']))
   		<textarea name="address" class="form-control" rows="3"></textarea>
   	</div>
 	</div>
+	
+	<div class="form-group">
+    <label for="inputPhoto3" class="col-sm-2 control-label">Photo</label>
+	<div class="col-sm-10">
+  		<input type="file"  name="photo"  id="inputPhoto3">
+  	</div>
+	</div>
 	<div class="form-group">
     <label for="inputEmail3" class="col-sm-2 control-label">Email</label>
     <div class="col-sm-10">
@@ -107,7 +115,7 @@ if(isset($_POST['btn_save']))
   
   <div class="form-group">
     <div class="col-sm-offset-2 col-sm-10">
-      <input type="submit" name="btn_save" value="save" />
+      <input type="submit" name="btn_save" value="Sign Up" class="btn btn-default" />
     </div>
   </div>
 </form>

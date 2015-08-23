@@ -1,3 +1,4 @@
+
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
@@ -8,11 +9,11 @@
 <body>
 <?php include('header.php');
 	$member_id = $_REQUEST['member_id'];
-	$select = "SELECT * FROM registration WHERE member_id=$member_id ";
+	$select = "SELECT * FROM registration WHERE member_id = $member_id ";
 	$array = mysql_query($select);
 	$show = mysql_fetch_array($array);
-	$hobbies = explode(",", $show['hobby']);	
-?>
+	$hobbies = explode (",", $show['hobby'] );
+?> 
 
 <div class="container">
 <div class="row col-md-6">
@@ -41,9 +42,9 @@
 	<div class="form-group">
     <label for="inputGender3" class="col-sm-2 control-label">Gendar:</label>
 	<div class="col-sm-10">
-  		<input type="radio" name="gendar" id="optionsRadios1" value="male" <?php if ($show['gender']=='Male'){echo 'checked';}?> >
+  		<input type="radio" name="gendar" id="optionsRadios1" value="Male" <?php if (strtolower($show['gendar'])=='male'){echo 'checked';} ?> >
 		Male
-		<input type="radio" name="gendar" id="optionsRadios2" value="female" <?php if ($show['gender']=='Male'){echo 'checked';}?> >
+		<input type="radio" name="gendar" id="optionsRadios2" value="Female" <?php if (strtolower($show['gendar'])=='female'){echo 'checked';} ?> >
 		Female
   	</div>
 	</div>
@@ -52,11 +53,11 @@
     <div class="form-group">
     <label for="inputHobby3" class="col-sm-2 control-label">Hobby</label>
     <div class="col-sm-10">
-      <input type="checkbox" name="hobby[]" id="inputHobby3" value="Cricket" <?php if(in_array('Cricket', $hobbies) ) {echo 'checked';}?> >
+      <input type="checkbox" name="hobby[]" id="optionsCheckbox1" value="Cricket" <?php if(in_array('Cricket', $hobbies) ) {echo 'checked';}?> >
 	  Cricket
-	  <input type="checkbox" name="hobby[]" id="inputHobby3" value="Football" <?php if(in_array('Football', $hobbies) ) {echo 'checked';}?> >
+	  <input type="checkbox" name="hobby[]" id="optionsCheckbox2" value="Football" <?php if(in_array('Football', $hobbies) ) {echo 'checked';}?> >
 	  Football
-	  <input type="checkbox" name="hobby[]" id="inputHobby3" value="Cycle" <?php if(in_array('Cycle', $hobbies) ) {echo 'checked';}?> >
+	  <input type="checkbox" name="hobby[]" id="optionsCheckbox3" value="Cycle" <?php if(in_array('Cycle', $hobbies) ) {echo 'checked';}?> >
 	  Cycle
     </div>
   </div>
@@ -64,9 +65,21 @@
   <div class="form-group">
     <label for="inputAddress3" class="col-sm-2 control-label">Address</label>
 	<div class="col-sm-10">
-  		<textarea name="address" class="form-control" rows="3" <?php echo $show['address'];?> > </textarea>
+  		<textarea name="address" class="form-control" rows="3"> <?php echo $show['address'];?>  </textarea>
   	</div>
 	</div>
+	<div class="form-group">
+    <label for="inputPhoto3" class="col-sm-2 control-label">Photo</label>
+	<div class="col-sm-10">
+  		<?php
+	  		$photo = is_file($show['photo']) ? $show['photo'] : 'images/no_photo.jpg'; 
+	  ?>
+	  <img src="<?php echo $photo; ?>" width="55" height="65" />
+        <input type="file" name="photo" />
+		<input type="hidden" name="old_photo" value="<?php echo $show['photo'];?>" />
+  	</div>
+	</div>
+	
 	<div class="form-group">
     <label for="inputEmail3" class="col-sm-2 control-label">Email</label>
     <div class="col-sm-10">
@@ -74,26 +87,6 @@
     </div>
   </div>
 	
-	<div class="form-group">
-    <label for="inputPassword3" class="col-sm-2 control-label">Password</label>
-    <div class="col-sm-10">
-      <input type="password" name="password" class="form-control" id="inputPassword3" pattern="(?=^.{8,14}$)((?=.*\d)|(?=.*\W+))(?![.\n])(?=.*[A-Z])(?=.*[a-z]).*$" required >
-    </div>
-  </div>
-  
-  <div class="form-group">
-    <label for="inputConfirmPassword3" class="col-sm-2 control-label">Confirm Password</label>
-    <div class="col-sm-10">
-       <input type="password" name="password_confirm" class="form-control" id="password_confirm3" pattern="(?=^.{8,14}$)((?=.*\d)|(?=.*\W+))(?![.\n])(?=.*[A-Z])(?=.*[a-z]).*$" required >
-    </div>
-  </div>
-  
-  
-  <div class="form-group">
-    <div class="col-sm-offset-2 col-sm-10">
-      <input type="submit" name="btn_save" value="save" />
-    </div>
-  </div>
 </form>
 </div>
 </div>
@@ -106,20 +99,38 @@
 	if(isset($_POST['btn_save']))
 	{
 
-		$name = $_POST["name"];
-		$father_name = $_POST["father_name"];
-		$email = $_POST["email"];
-		$gendar = $_POST["gendar"];
+		$name = $_POST['name'];
+		$father_name = $_POST['father_name'];
+		$email = $_POST['email'];
+		$gendar = $_POST['gendar'];
 		$hobby = implode(",", $_POST['hobby']);
-		$address = $_POST["address"];
-		$password = md5($_POST['password']);
-		$insert = "UPDATE INTO registration SET
+		$address = $_POST['address'];
+		
+		
+		if($_FILES['photo']['tmp_name']!='')
+		{
+			$old_photo = $_POST['old_photo'];
+			unlink($old_photo);
+			
+			$tmp_name = $_FILES["photo"]["tmp_name"];
+			$photo = rand(1,1000).$_FILES["photo"]["name"];
+			$folder_destination = 'photos/'.$photo;
+			
+			move_uploaded_file($tmp_name, $new_photo);
+		}
+		else
+		{
+			$new_photo = $_POST["old_photo"];
+		}
+		
+		$insert = "UPDATE registration SET
 							name = '$name',
 							father_name = '$father_name',
 							gendar = '$gendar',
 							address = '$address',
 							hobby = '$hobby',
 							email = '$email',
+							photo = '$new_photo',
 							password = '$password'
 							
 							WHERE member_id = $member_id
@@ -130,5 +141,4 @@
 	}
 	
 ?>	
-?>
 

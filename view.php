@@ -1,3 +1,4 @@
+
 <?php
 	$member_id = $_REQUEST['member_id'];
 	if(isset($_POST['btn_save']))
@@ -8,15 +9,31 @@
 		$email = $_POST["email"];
 		$gendar = $_POST["gendar"];
 		$hobby = implode(",", $_POST['hobby']);
-		$address = $_POST["address"];
+		$address = $_POST['address'];
 		$password = md5($_POST['password']);
-		$insert = "UPDATE INTO registration SET
+		if($_FILES['photo']['tmp_name']!='')
+		{
+			$old_photo = $_POST['old_photo'];
+			unlink($old_photo);
+			
+			$tmp_name = $_FILES["photo"]["tmp_name"];
+			$photo = rand(1,1000).$_FILES["photo"]["name"];
+			$folder_destination = 'photos/'.$photo;
+			
+			move_uploaded_file($tmp_name, $new_photo);
+		}
+		else
+		{
+			$new_photo = $_POST["old_photo"];
+		}
+		$insert = "UPDATE registration SET
 							name = '$name',
 							father_name = '$father_name',
 							gendar = '$gendar',
 							address = '$address',
 							hobby = '$hobby',
 							email = '$email',
+							photo = '$new_photo',
 							password = '$password'
 							
 							WHERE member_id = $member_id
@@ -55,75 +72,55 @@
 <div class="panel-body">
 <form class="form-horizontal" method="post">
 	<div class="form-group">
+    <label for="inputPhoto3" class="col-sm-2 control-label">Photo</label>
+	<div class="col-sm-10">
+  		<?php
+	  		$photo = is_file($show['photo']) ? $show['photo'] : 'images/no_photo.jpg'; 
+	  ?>
+	  <img src="<?php echo $photo; ?>" width="55" height="65" />
+  	</div>
+	</div>
+	
+	<div class="form-group">
     <label for="inputName3" class="col-sm-2 control-label">Name</label>
 	<div class="col-sm-10">
-  		<input type="text" name="name"  class="form-control"  pattern="[^0-9]{2,80}" value="<?php echo $show['name'];?>" required />
+  		<?php echo $show['name'];?>
   	</div>
 	</div>
 	
 	<div class="form-group">
     <label for="inputFathersname3" class="col-sm-2 control-label">Fathers Name</label>
 	<div class="col-sm-10">
-  		<input type="text"  name="father_name" class="form-control" id="inputFathersname3" value="<?php echo $show['father_name'];?>" >
+  		<?php echo $show['father_name'];?>
   	</div>
 	</div>
 	
 	<div class="form-group">
     <label for="inputGender3" class="col-sm-2 control-label">Gendar:</label>
 	<div class="col-sm-10">
-  		<input type="radio" name="gendar" id="optionsRadios1" value="male" <?php if ($show['gender']=='Male'){echo 'checked';}?> >
-		Male
-		<input type="radio" name="gendar" id="optionsRadios2" value="female" <?php if ($show['gender']=='Male'){echo 'checked';}?> >
-		Female
+  		<?php echo $show['gendar'];?>
   	</div>
 	</div>
 	
   
     <div class="form-group">
     <label for="inputHobby3" class="col-sm-2 control-label">Hobby</label>
-    <div class="col-sm-10">
-      <input type="checkbox" name="hobby[]" id="inputHobby3" value="Cricket" <?php if(in_array('Cricket', $hobbies) ) {echo 'checked';}?> >
-	  Cricket
-	  <input type="checkbox" name="hobby[]" id="inputHobby3" value="Football" <?php if(in_array('Football', $hobbies) ) {echo 'checked';}?> >
-	  Football
-	  <input type="checkbox" name="hobby[]" id="inputHobby3" value="Cycle" <?php if(in_array('Cycle', $hobbies) ) {echo 'checked';}?> >
-	  Cycle
+    <div class="col-sm-10"><?php echo $show['hobby'];?>
     </div>
   </div>
   
   <div class="form-group">
     <label for="inputAddress3" class="col-sm-2 control-label">Address</label>
-	<div class="col-sm-10">
-  		<textarea name="address" class="form-control" rows="3" <?php echo $show['address'];?> > </textarea>
+	<div class="col-sm-10"><?php echo $show['address'];?>
   	</div>
 	</div>
 	<div class="form-group">
     <label for="inputEmail3" class="col-sm-2 control-label">Email</label>
     <div class="col-sm-10">
-      <input type="email"  name="email" class="form-control" id="inputEmail3" value="<?php echo $show['email'];?>" required >
+      <?php echo $show['email'];?>"
     </div>
   </div>
-	
-	<div class="form-group">
-    <label for="inputPassword3" class="col-sm-2 control-label">Password</label>
-    <div class="col-sm-10">
-      <input type="password" name="password" class="form-control" id="inputPassword3" pattern="(?=^.{8,14}$)((?=.*\d)|(?=.*\W+))(?![.\n])(?=.*[A-Z])(?=.*[a-z]).*$" required >
-    </div>
-  </div>
-  
-  <div class="form-group">
-    <label for="inputConfirmPassword3" class="col-sm-2 control-label">Confirm Password</label>
-    <div class="col-sm-10">
-       <input type="password" name="password_confirm" class="form-control" id="password_confirm3" pattern="(?=^.{8,14}$)((?=.*\d)|(?=.*\W+))(?![.\n])(?=.*[A-Z])(?=.*[a-z]).*$" required >
-    </div>
-  </div>
-  
-  
-  <div class="form-group">
-    <div class="col-sm-offset-2 col-sm-10">
-      <input type="submit" name="btn_save" value="save" />
-    </div>
-  </div>
+
 </form>
 </div>
 </div>

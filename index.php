@@ -1,27 +1,27 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
-<head>
-<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
-<title>Untitled Document</title>
-</head>
 
-<body>
 <?php include('header.php');?>
-<table width="100%" border="1">
+
+<table width="100%"  class="table table-striped">
+<thead>
 	<tr>
-		<td width="9%"><div align="center">Ser</div></td>
-		<td width="18%"><div align="center">Name</div></td>
-		<td width="16%"><div align="center">Address</div></td>
-		<td width="15%"><div align="center">Email</div></td>
-		<td width="15%"><div align="center">Password</div></td>
+		<th>Ser</th>
+		<th>Photo</th>
+		<th>Name</th>
+		<th>Email</th>
+		<th>Address</th>
+		<th>Action</th>
 	</tr>
+	</thead>
+	<tbody>
 <?php
 	$d_member_id = $_REQUEST['d_member_id'];
+	$photo = $_REQUEST['photo'];
 	
 	if(!empty ($d_member_id) )
 	{
-			$select = "SELECT * FROM registration WHERE member_id = $d_member_id";
+			$select = "DELETE FROM registration WHERE member_id=$d_member_id ";
 			$array = mysql_query($select);
+			is_file($photo) ? unlink($photo) : '';
 				
 	}
 	
@@ -33,20 +33,29 @@
 	
 ?>
 	<tr>
-		<td><div align="center"><?php echo $ser++; ?> </div></td>
-		<td><div align="center"><?php echo $show['name']; ?></div></td>
-		<td><div align="center"><?php echo $show['address']; ?></div></td>
-		<td><div align="center"><?php echo $show['email']; ?></div></td>
-		<td><div align="center"><?php echo $show['Password']; ?></div></td>
-		<td><div align="center">
-		<a href="view.php?member_id=<?php echo $show['member_id']; ?>">View</a> -
-		<a href="edit.php?member_id=<?php echo $show['member_id']; ?>">Edit</a> -
-		<a href="index.php?d_member_id=<?php echo $show['member_id']; ?>">Delete</a></div>
+		<td><?php echo $ser++; ?> </td>
+		<td>
+		<?php
+			$photo = is_file($show['photo']) ? $show['photo'] : 'images/no-image.png';
+		?>
+		<img src="<?php echo $photo;?>" width="55" height="55" class="img-circle" /></td>
+		<td><?php echo $show['name']; ?></td>
+		<td><?php echo $show['email']; ?></td>
+		<td><?php echo $show['address']; ?></td>
+		<td>
+		<a class="btn btn-default" href="view.php?member_id=<?php echo $show['member_id']; ?>">View</a>
+		<?php
+			if($_SESSION['user_name'])
+			{
+		?>- 
+		<a class="btn btn-default" href="edit.php?member_id=<?php echo $show['member_id']; ?>">Edit</a> 
+		<a class="btn btn-danger" href="index.php?d_member_id=<?php echo $show['member_id']; ?>&photo=<?php echo $show['photo'];?>" onClick="return confirm('Are you sure you want to delete')">Delete</a>
+		<?php } ?>
 		</td>
-		
 	</tr>
 	<?php } ?>
+	</tbody>
 </table>
-<p> &nbsp;</p>		
+		
 </body>
 </html>
