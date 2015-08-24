@@ -44,13 +44,8 @@
 		<td><?php echo $show['address']; ?></td>
 		<td>
 		<a class="btn btn-default" href="view.php?member_id=<?php echo $show['member_id']; ?>">View</a>
-		<?php
-			if($_SESSION['user_name'])
-			{
-		?>- 
 		<a class="btn btn-default" href="edit.php?member_id=<?php echo $show['member_id']; ?>">Edit</a> 
 		<a class="btn btn-danger" href="index.php?d_member_id=<?php echo $show['member_id']; ?>&photo=<?php echo $show['photo'];?>" onClick="return confirm('Are you sure you want to delete')">Delete</a>
-		<?php } ?>
 		</td>
 	</tr>
 	<?php } ?>

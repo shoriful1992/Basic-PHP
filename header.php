@@ -1,6 +1,5 @@
 <?php 
-	$server_conn = mysql_connect('localhost', 'root', '');
-	mysql_select_db('xyzltd', $server_conn);
+require_once('connection.php');
 
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
@@ -43,24 +42,33 @@
         <li class="active"><span class="sr-only">(current)</span>
 		<a href="index.php">Home</a>
 		</li>
+		<?php
+		if(empty($_SESSION['auth_id']))
+		{
+		?>
         <li><a href="registration.php">Registration</a></li>
         <li><a href="login.php">LogIn</a></li>
+		<?php } ?>
         <li><a href="registration.php">Mission</a></li>
         <li><a href="registration.php">About Us</a></li>
         
       </ul>
-     
+		<?php
+		if(!empty($_SESSION['auth_id']))
+		{
+		?>
       <ul class="nav navbar-nav navbar-right">
         <li class="dropdown">
-          <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">User Name <span class="caret"></span></a>
+          <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"><?php echo $_SESSION['auth_email']; ?><span class="caret"></span></a>
           <ul class="dropdown-menu">
             <li><a href="#">Profile</a></li>
             <li><a href="#">Change Password</a></li>
             <li role="separator" class="divider"></li>
-            <li><a href="#">Log Out</a></li>
+            <li><a href="logout.php">Log Out</a></li>
           </ul>
         </li>
       </ul>
+	  <?php } ?>
     </div><!-- /.navbar-collapse -->
   </div><!-- /.container-fluid -->
 </nav>

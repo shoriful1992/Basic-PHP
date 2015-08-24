@@ -1,29 +1,28 @@
 <?php
-		@session_start();
-		$server_conn = mysql_connect('localhost', 'root', '');
-		mysql_select_db('xyzltd', $server_conn);
-		if(isset($_POST['btn_save']))
-		{
-				$email = $_POST['email'];
-				$password = md5($_POST['password']);
-				$sqlValidate = "SELECT email FROM registration WHERE email='$email' AND password='$password' ";
-				$result = mysql_query($sqlValidate);
-				$show = mysql_fetch_array($result);
-				
-				if(!empty($show ['email']))
+	require_once('connection.php');
+	if(isset($_POST['btnLogin']))
+	{
+		
+				$email       = $_POST['email'];
+				$password    = md5($_POST['password']);
+				$sqlValidate = "SELECT * FROM registration WHERE email='$email' AND password='$password' ";
+				$result      = mysql_query($sqlValidate) or die(mysql_error());
+				$numRow      = mysql_num_rows($result);
+				if( $numRow > 0 )
 				{
-					$_SESSION['email'] = $show ['email'];
-					header('location:index.php');
+					$show = mysql_fetch_array($result);
+					@session_start();
+					$_SESSION['auth_id']    = $show['member_id'];
+					$_SESSION['auth_name']  = $show['name'];
+					$_SESSION['auth_email'] = $show['email'];
+					header('location:home.php');
 				}
 				else
 				{
-					echo"Not Found";	
+					header("location:login.php?msg=Unauthorized Log In");
 				}
 		}
-		else if($_REQUEST['logout']=='ok')
-		{
-			unset($_SESSION['email']);
-		}
+		
 
 ?>
 <!-- Latest compiled and minified CSS -->
@@ -47,17 +46,17 @@
       </h3>
    </div>
 <div class="panel-body">
- <form class="form-horizontal">
+ <form class="form-horizontal" method="post" action="">
   <div class="form-group">
     <label for="inputEmail3" class="col-sm-2 control-label">Email</label>
     <div class="col-sm-10">
-      <input type="email" class="form-control" id="inputEmail3" placeholder="Email">
+      <input type="email" class="form-control" id="inputEmail3" placeholder="Email" name="email">
     </div>
   </div>
   <div class="form-group">
     <label for="inputPassword3" class="col-sm-2 control-label">Password</label>
     <div class="col-sm-10">
-      <input type="password" class="form-control" id="inputPassword3" placeholder="Password">
+      <input type="password" class="form-control" id="inputPassword3" placeholder="Password" name="password">
 	  <a href="#">Forgot your password?</a>
     </div>
   </div>
@@ -65,14 +64,14 @@
     <div class="col-sm-offset-2 col-sm-10">
       <div class="checkbox">
         <label>
-          <input type="checkbox"> Remember me
+          <input type="checkbox" name="remember_me"> Remember me
         </label>
       </div>
     </div>
   </div>
   <div class="form-group">
     <div class="col-sm-offset-2 col-sm-10">
-      <button type="submit" class="btn btn-default">Sign in</button>  
+      <button type="submit" class="btn btn-default" name="btnLogin">Sign in</button>  
     </div>
   </div>
  <div class="form-group">
